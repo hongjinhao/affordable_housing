@@ -6,6 +6,16 @@
 
 Analysing afforable housing projects in California with Low-Income Housing Tax Credit (LIHTC)
 
+## Virtual Environment & Package Management
+- Python *virtualenv* is used
+- Show environments with `workon`
+- Activate environment with `workon <environment-name>`
+- If any additional packages were installed and you want to add them into requirements.txt, use `pip freeze > requirements.txt `
+
+
+
+
+
 ## Project Organization
 
 ```
@@ -56,6 +66,20 @@ Analysing afforable housing projects in California with Low-Income Housing Tax C
     │
     └── plots.py                <- Code to create visualizations
 ```
+## References
+- `references/jh_grok_applicant_data_overview.pdf`: A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
+
+## Data Processing
+- `affordable_housing/dataset.py`: Merges `award_list.xlsx` and `2025-Applicant-list-4-per-R1.xlsx` from `data/external`, handles NaNs, and saves to `data/processed/merged_dataset.csv`. 
+
+  Run with:
+  ```bash
+  python affordable_housing/dataset.py
+  ``` 
+  ``` python
+  from affordable_housing.dataset import main
+  main()
+  ```
 --------
 
