@@ -6,11 +6,89 @@
 
 Analysing afforable housing projects in California with Low-Income Housing Tax Credit (LIHTC)
 
+## Usage
+Run Jupyter Notebook to explore the data:
+  ```bash
+  jupyter-notebook --no-browser notebooks
+  ```
+
+## Data Processing
+- `affordable_housing/dataset.py`: Merges `award_list.xlsx` and `2025-Applicant-list-4-per-R1.xlsx` from `data/external`, handles NaNs, and saves to `data/processed/merged_dataset.csv`. 
+
+  Run with:
+  ```bash
+  python affordable_housing/dataset.py
+  ``` 
+  ``` python
+  from affordable_housing.dataset import main
+  main()
+  ```
+  ```bash
+  make data
+  ```
+
 ## Virtual Environment & Package Management
-- Python *virtualenv* is used
-- Show environments with `workon`
-- Activate environment with `workon <environment-name>`
-- If any additional packages were installed and you want to add them into requirements.txt, use `pip freeze > requirements.txt `
+
+### Setup
+- This project uses Python *virtualenvwrapper* for environment management
+- Python version: 3.10
+- Create new environment:
+  ```bash
+  make create_environment
+  ```
+- Show available environments:
+  ```bash
+  workon
+  ```
+- Activate environment:
+  ```bash
+  workon affordable_housing
+  ```
+- Deactivate environment:
+  ```bash
+  deactivate
+  ```
+
+### Package Management
+- Install all dependencies:
+  ```bash
+  make requirements
+  ```
+- When using WSL, you may need to install the package in development mode:
+  ```bash
+  pip install -e .
+  ```
+- Key dependencies:
+  - pandas, numpy: Data processing
+  - scikit-learn: Modeling
+  - matplotlib, seaborn: Visualization
+  - ruff: Code formatting and linting
+  - typer: CLI interface
+  - loguru: Logging
+
+### Development Workflow
+- After installing new packages:
+  ```bash
+  pip freeze > requirements.txt
+  ```
+- Format code:
+  ```bash
+  make format
+  ```
+- Check code style:
+  ```bash
+  make lint
+  ```
+- Clean Python cache files:
+  ```bash
+  make clean
+  ```
+
+### Getting Help
+- List all available make commands:
+  ```bash
+  make help
+  ```
 
 
 
@@ -70,16 +148,5 @@ Analysing afforable housing projects in California with Low-Income Housing Tax C
 - `references/jh_grok_applicant_data_overview.pdf`: A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
 
-## Data Processing
-- `affordable_housing/dataset.py`: Merges `award_list.xlsx` and `2025-Applicant-list-4-per-R1.xlsx` from `data/external`, handles NaNs, and saves to `data/processed/merged_dataset.csv`. 
-
-  Run with:
-  ```bash
-  python affordable_housing/dataset.py
-  ``` 
-  ``` python
-  from affordable_housing.dataset import main
-  main()
-  ```
 --------
 

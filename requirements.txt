@@ -1,4 +1,4 @@
--e git+https://github.com/hongjinhao/affordable_housing.git@e6c8b94561c9dae333c3673bdf3ac7ae0969e691#egg=affordable_housing
+-e git+https://github.com/hongjinhao/affordable_housing.git@ad5ba185e501407167c1a507a9a03928bb2952f1#egg=affordable_housing
 anyio==4.9.0
 argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
