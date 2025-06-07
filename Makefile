@@ -4,7 +4,7 @@
 
 PROJECT_NAME = affordable_housing
 PYTHON_VERSION = 3.10
-PYTHON_INTERPRETER = python
+PYTHON_INTERPRETER = python3
 
 #################################################################################
 # COMMANDS                                                                      #
