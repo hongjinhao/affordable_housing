@@ -74,6 +74,15 @@ def main(
         merged_df["GP3 PARENT COMPANY"] = merged_df["GP3 PARENT COMPANY"].fillna("none")
         logger.info(f"After NaN handling, dataset has {len(merged_df)} rows")
 
+        # Adjust column data types
+        logger.info("Adjusting column data types")
+        col = "EXCEEDING MINIMUM INCOME RESTRICTIONS (20 PTS)"
+        if (merged_df[col] % 1 != 0).any():
+            print(f"Warning: {col} has non-integer values; rounding down")
+            merged_df[col] = merged_df[col].round(0)
+        merged_df[col] = merged_df[col].astype("int64")
+        logger.info(f"Adjusted column '{col}' to integer type")
+
         # Save processed data
         logger.info(f"Saving merged dataset to {output_path}")
         merged_df.to_csv(output_path, index=False)
