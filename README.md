@@ -6,6 +6,8 @@
 
 Analysing afforable housing projects in California with Low-Income Housing Tax Credit (LIHTC)
 
+![CDLAC image](images/CDLAC.png)
+
 ## Usage
 Run Jupyter Notebook to explore the data:
   ```bash
@@ -31,6 +33,7 @@ Run Jupyter Notebook to explore the data:
 
 ### Setup
 - This project uses Python *virtualenvwrapper* for environment management
+    > Note: Environments created with virtualenvwrapper (via mkvirtualenv) are stored in ~/.virtualenvs/ and can be activated with workon
 - Python version: 3.10
 - Create new environment:
   ```bash
@@ -147,6 +150,6 @@ Run Jupyter Notebook to explore the data:
 ## References
 - `references/jh_grok_applicant_data_overview.pdf`: A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
-
+![applicant data overview](images/applicant-data-overview.png)
 --------
 
