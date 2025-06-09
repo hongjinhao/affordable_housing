@@ -7,6 +7,7 @@
 Analysing afforable housing projects in California with Low-Income Housing Tax Credit (LIHTC)
 
 ![CDLAC image](images/CDLAC.png)
+![data pipeline](images/data_pipeline.png)
 
 ## Usage
 Run Jupyter Notebook to explore the data:
