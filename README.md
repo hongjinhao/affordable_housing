@@ -4,9 +4,8 @@
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
 
-Analysing afforable housing projects in California with Low-Income Housing Tax Credit (LIHTC)
+Analysing housing projects in California applying for tax-exempt bond financing.  
 
-![CDLAC image](images/CDLAC.png)
 ![data pipeline](images/data_pipeline.png)
 
 ## Usage
@@ -152,5 +151,33 @@ Run Jupyter Notebook to explore the data:
 - `references/jh_grok_applicant_data_overview.pdf`: A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
 ![applicant data overview](images/applicant-data-overview.png)
+
+
+- What is this tax-exempt bond allocation via CDLAC?  
+Federal law limits how much tax-exempt debt a state can issue in a calendar year for private projects that have a qualified public benefit. This cap is determined by a population-based formula. The California Debt Limit Allocation Committee (CDLAC) was created to set and allocate California’s annual debt ceiling and administer the State’s tax-exempt bond program to allocate the debt authority. CDLAC’s programs are used to finance affordable housing developments for low-income Californians, build solid waste disposal and waste recycling facilities, and to finance industrial development projects.  
+https://www.treasurer.ca.gov/cdlac/
+
+- How is the tax-exempt debt allocated?   
+Program Categories: CDLAC allocates bonds to multiple programs (e.g., QRRP, Single-Family Housing, Industrial Development Bonds), with QRRP being the largest category. Within QRRP, subcategories like New Construction, Preservation, Rural, and BIPOC address different housing needs (e.g., new builds vs. rehab, rural vs. urban equity).
+
+- What is QRRP?  
+The State of California is short 1.5 million affordable housing units. The Qualified Residential Rental Project Program helps spur affordable housing production by assisting developers of multifamily rental housing units with the acquisition and construction of new units, or the purchase and rehabilitation of existing units.  
+https://www.treasurer.ca.gov/cdlac/applications/qrrp/index.asp
+
+- How is this tax-exempt bond allocation related to tax credits?  
+ Projects that receive an award of bond authority have the right to apply for non-competitive 4% tax credits, administered by the California Tax Credit Allocation Committee.  
+ https://www.treasurer.ca.gov/cdlac/applications/qrrp/index.asp
+
+- Who determines the tax-exempt bond allocation via CDLAC?  
+Staff review applications, and the committee votes on the final list
+
+- What is federal LIHTC?  
+The Low-Income Housing Tax Credit (LIHTC) program is the most important resource for creating affordable housing in the United States today. Created by the Tax Reform Act of 1986, the LIHTC program gives State and local LIHTC-allocating agencies the equivalent of approximately $10.5 billion in annual budget authority to issue tax credits for the acquisition, rehabilitation, or new construction of rental housing targeted to lower-income households.  
+https://www.huduser.gov/portal/datasets/lihtc.html
+
+- Why are there multiple rounds?  
+CDLAC’s tax-exempt bond allocations are organized into multiple rounds (e.g., Round 1, Round 2) within a calendar year, with a competitive, points-based system to distribute a limited annual bond volume cap (e.g., $5.126 billion for 2025).
+
+
 --------
 
