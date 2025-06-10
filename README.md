@@ -164,12 +164,15 @@ Program Categories: CDLAC allocates bonds to multiple programs (e.g., QRRP, Sing
 The State of California is short 1.5 million affordable housing units. The Qualified Residential Rental Project Program helps spur affordable housing production by assisting developers of multifamily rental housing units with the acquisition and construction of new units, or the purchase and rehabilitation of existing units.  
 https://www.treasurer.ca.gov/cdlac/applications/qrrp/index.asp
 
-- How is this tax-exempt bond allocation related to tax credits?  
+- How is this tax-exempt bond allocation related to tax credits and CTCAC?  
  Projects that receive an award of bond authority have the right to apply for non-competitive 4% tax credits, administered by the California Tax Credit Allocation Committee.  
  https://www.treasurer.ca.gov/cdlac/applications/qrrp/index.asp
 
 - Who determines the tax-exempt bond allocation via CDLAC?  
 Staff review applications, and the committee votes on the final list
+
+- What does the CTCAC do?  
+The California Tax Credit Allocation Committee (CTCAC) administers the **federal and state** Low-Income Housing Tax Credit Programs (LIHTC). Both programs were created to promote private investment in affordable rental housing for low-income Californians.
 
 - What is federal LIHTC?  
 The Low-Income Housing Tax Credit (LIHTC) program is the most important resource for creating affordable housing in the United States today. Created by the Tax Reform Act of 1986, the LIHTC program gives State and local LIHTC-allocating agencies the equivalent of approximately $10.5 billion in annual budget authority to issue tax credits for the acquisition, rehabilitation, or new construction of rental housing targeted to lower-income households.  
@@ -178,6 +181,11 @@ https://www.huduser.gov/portal/datasets/lihtc.html
 - Why are there multiple rounds?  
 CDLAC’s tax-exempt bond allocations are organized into multiple rounds (e.g., Round 1, Round 2) within a calendar year, with a competitive, points-based system to distribute a limited annual bond volume cap (e.g., $5.126 billion for 2025).
 
+- Source of the award and applicantion list?  
+From the CTCAC website  
+https://www.treasurer.ca.gov/ctcac/2025/application.asp
 
+- So what does the AWARD column stand for in award_list? 
+I am going to assume it means that the housing projects has won the tax-exempt bond allocation (via CDLAC's QRRP program) AND the non-competitive 4% tax credit (via CTCAC's LIHTC program)
 --------
 
