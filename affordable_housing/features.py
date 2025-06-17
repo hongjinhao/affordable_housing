@@ -2,13 +2,25 @@ from pathlib import Path
 
 from loguru import logger
 import pandas as pd
-from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import (
+    FunctionTransformer,
+    MinMaxScaler,
+    OneHotEncoder,
+    PowerTransformer,
+    StandardScaler,
+)
 from tqdm import tqdm
 import typer
 
 from affordable_housing.config import PROCESSED_DATA_DIR
 
 app = typer.Typer()
+
+TEST_SIZE = 0.25
+SEED = 42
 
 
 @app.command()
@@ -44,25 +56,67 @@ def main(
         "CDLAC REGION",
     ]
     X_values = df[numeric + cat]
-    logger.info("Extraction complete")
+    logger.info(
+        f"Extracted {X_values.shape} and {y_values.shape} important features from the dataset"
+    )
 
     # split
     logger.info("Split data into test and train")
     X_train, X_test, y_train, y_test = train_test_split(
-        X_values, y_values, test_size=0.25, stratify=y_values, random_state=42
+        X_values, y_values, test_size=TEST_SIZE, stratify=y_values, random_state=SEED
     )
-    logger.info("split data into test and train")
+    logger.info(f"split completed with test size of {TEST_SIZE}")
 
+    # pipelines
+    logger.info("Creating preprocessing pipelines")
+
+    def binary_homeless(X):
+        return (X > 0).astype(int)
+
+    logger.debug("Setting up homeless pipeline")
+    homeless_transformer = FunctionTransformer(
+        func=binary_homeless,
+        feature_names_out="one-to-one",
+    )
+    homeless_pipe = make_pipeline(homeless_transformer)
+
+    logger.debug("Setting up points pipeline")
+    points_transformer = PowerTransformer(method="yeo-johnson")
+    points_pipe = make_pipeline(points_transformer, MinMaxScaler())
+
+    logger.debug("Setting up categorical and numerical pipelines")
+    cat_pipe = make_pipeline(OneHotEncoder())
+    remainder_num_pipe = make_pipeline(StandardScaler())
+
+    logger.info("Creating column transformer")
+    preprocessor_pipe = ColumnTransformer(
+        transformers=[
+            ("homeless_binary", homeless_pipe, ["HOMELESS %"]),
+            ("points_power", points_pipe, ["CDLAC TOTAL POINTS SCORE"]),
+            ("category", cat_pipe, cat),
+        ],
+        remainder=remainder_num_pipe,
+    )
     # transform
-    X_train["HOMELESS_present"] = (X_train["HOMELESS %"] > 0).astype(int)
-    numeric.remove("HOMELESS %")
-    cat.append("HOMELESS_present")
-    X_train.drop("HOMELESS %")
+    logger.info("Fitting and transforming training data")
+    X_train_transform = preprocessor_pipe.fit_transform(X_train)
+    logger.info("Transforming test data")
+    X_test_transform = preprocessor_pipe.transform(X_test)
 
+    # Convert to DataFrame with column names
+    logger.info("Converting transformed data to DataFrame")
+    X_train_transform_df = pd.DataFrame(
+        X_train_transform, columns=preprocessor_pipe.get_feature_names_out()
+    )
+    X_test_transform_df = pd.DataFrame(
+        X_test_transform, columns=preprocessor_pipe.get_feature_names_out()
+    )
     # save features
     logger.info(f"Saving features to {output_path}")
     X_train.to_csv(output_path / "X_train.csv", index=False)
     X_test.to_csv(output_path / "X_test.csv", index=False)
+    X_train_transform_df.to_csv(output_path / "X_train_transform.csv", index=False)
+    X_test_transform_df.to_csv(output_path / "X_test_transform.csv", index=False)
     y_train.to_csv(output_path / "y_train.csv", index=False)
     y_test.to_csv(output_path / "y_test.csv", index=False)
     logger.info("Features saved successfully.")
