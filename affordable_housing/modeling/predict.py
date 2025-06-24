@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import joblib
 from loguru import logger
+import pandas as pd
+from sklearn.metrics import classification_report, f1_score
 from tqdm import tqdm
 import typer
 
@@ -12,18 +15,31 @@ app = typer.Typer()
 @app.command()
 def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    features_path: Path = PROCESSED_DATA_DIR / "test_features.csv",
+    features_path: Path = PROCESSED_DATA_DIR / "X_test_transform.csv",
     model_path: Path = MODELS_DIR / "model.pkl",
     predictions_path: Path = PROCESSED_DATA_DIR / "test_predictions.csv",
+    y_test_path: Path = PROCESSED_DATA_DIR / "y_test.csv",
     # -----------------------------------------
 ):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    logger.info("Performing inference for model...")
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Inference complete.")
-    # -----------------------------------------
+    logger.info("Loading test features and model...")
+    X_test = pd.read_csv(features_path)
+    model = joblib.load(model_path)
+
+    logger.info("Performing inference...")
+    y_test_pred = model.predict(X_test)
+    logger.info(f"First 20 predictions: {y_test_pred[:20]}")
+
+    # Optionally compare to actual y_test if available
+    if y_test_path.exists():
+        y_test = pd.read_csv(y_test_path).squeeze()
+        logger.info(f"First 20 actual values: {y_test[:20].values}")
+        f1 = f1_score(y_test, y_test_pred)
+        logger.info(f"Test F1 score: {f1:.3f}")
+        logger.info("Classification report:\n" + classification_report(y_test, y_test_pred))
+
+    # Save predictions
+    pd.Series(y_test_pred).to_csv(predictions_path, index=False)
+    logger.success(f"Inference complete. Predictions saved to {predictions_path}")
 
 
 if __name__ == "__main__":

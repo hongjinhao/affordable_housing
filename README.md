@@ -21,12 +21,20 @@ Run Jupyter Notebook to explore the data:
   ```bash
   python affordable_housing/dataset.py
   ``` 
-  ``` python
+  ```python
   from affordable_housing.dataset import main
   main()
   ```
   ```bash
   make data
+  ```
+
+- `affordable_housing/features.py`: Generates machine learning features from `data/processed/merged_dataset.csv`.  
+  - Extracts key numeric and categorical columns, splits into train/test, applies preprocessing (including one-hot encoding, scaling, and custom transformations), and saves processed features to `data/processed/`.
+
+  Run with:
+  ```bash
+  python affordable_housing/features.py
   ```
 
 ## Virtual Environment & Package Management
