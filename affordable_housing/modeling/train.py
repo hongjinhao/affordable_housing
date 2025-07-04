@@ -27,8 +27,7 @@ def main(
 
     logger.info("Setting up model pipeline and hyperparameter search...")
 
-    # Example: If you want to reconstruct the pipeline, you can load the same columns as in features.py
-    # But since you are using already transformed features, you can skip preprocessing here
+    # Since we have already transformed features, no need for preprocessing
     full_pipeline = make_pipeline(LogisticRegression(random_state=42))
 
     param_dist = {
