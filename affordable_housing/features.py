@@ -33,7 +33,7 @@ def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
     input_path: Path = PROCESSED_DATA_DIR / "merged_dataset.csv",
     output_path: Path = PROCESSED_DATA_DIR,
-    model_path: Path = MODELS_DIR / "preprocesser.pkl",
+    model_path: Path = MODELS_DIR / "preprocessor.pkl",
     # -----------------------------------------
 ):
     # ---- REPLACE THIS WITH YOUR OWN CODE ----
