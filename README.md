@@ -30,7 +30,7 @@ Run Jupyter Notebook to explore the data:
   ```
 
 - `affordable_housing/features.py`: Generates machine learning features from `data/processed/merged_dataset.csv`.  
-  - Extracts key numeric and categorical columns, splits into train/test, applies preprocessing (including one-hot encoding, scaling, and custom transformations), and saves processed features to `data/processed/`.
+  - Extracts key numeric and categorical columns, renames them, splits into train/test, applies preprocessing (including one-hot encoding, scaling, and custom transformations), saves processed features to `data/processed/`, and saves the preprocessor model to `models/preprocessor.pkl`.
 
   Run with:
   ```bash
