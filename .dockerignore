@@ -1,0 +1,64 @@
+# Ignore version control files and directories
+.git
+.gitignore
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local environment and virtual environments
+.env
+venv/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore IDE and editor configuration files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore build and test artifacts
+tests/
+test-results/
+coverage/
+*.log
+*.log.*
+
+# Ignore documentation and miscellaneous files
+README.md
+LICENSE
+docs/
+*.md
+
+# Ignore temporary files and directories
+tmp/
+*.tmp
+*.bak
+*.swp
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+docker-compose.yaml
+
+# Ignore sensitive configuration files
+*.key
+*.pem
+*.crt
+secrets/
+config/secrets/
+
+# Ignore local data or database files
+data/
+*.db
+*.sqlite3
+
+# Ignore package lock files if already copied explicitly
+# (since package.json and package-lock.json are copied separately in the Dockerfile)
+package.json
+package-lock.json
