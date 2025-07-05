@@ -17,15 +17,12 @@ from tqdm import tqdm
 import typer
 
 from affordable_housing.config import MODELS_DIR, PROCESSED_DATA_DIR
+from affordable_housing.utils import get_binary_homeless_transformer
 
 app = typer.Typer()
 
 TEST_SIZE = 0.25
 SEED = 42
-
-
-def binary_homeless(X):
-    return (X > 0).astype(int)
 
 
 @app.command()
@@ -92,11 +89,7 @@ def main(
     logger.info("Creating preprocessing pipelines")
 
     logger.debug("Setting up homeless pipeline")
-    homeless_transformer = FunctionTransformer(
-        func=binary_homeless,
-        feature_names_out="one-to-one",
-    )
-    homeless_pipe = make_pipeline(homeless_transformer)
+    homeless_pipe = make_pipeline(get_binary_homeless_transformer())
 
     logger.debug("Setting up points pipeline")
     points_transformer = PowerTransformer(method="yeo-johnson")
