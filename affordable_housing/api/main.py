@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 import pandas as pd
 from pydantic import BaseModel
@@ -10,6 +11,15 @@ from affordable_housing.config import MODELS_DIR
 from affordable_housing.modeling.predict import predict
 
 app = FastAPI(title="Affordable Housing Prediction API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080", "http://13.57.238.154", "*"],  # Adjust for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # Pydantic model for input data
