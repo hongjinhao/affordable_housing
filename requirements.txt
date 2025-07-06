@@ -1,4 +1,3 @@
--e git+https://github.com/hongjinhao/affordable_housing.git@21cd2d2b5dff4a44fb943d6d6cbf33ecefad96d9#egg=affordable_housing
 annotated-types==0.7.0
 anyio==4.9.0
 click==8.2.1

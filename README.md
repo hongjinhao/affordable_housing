@@ -65,10 +65,17 @@ Run Jupyter Notebook to explore the data:
   ```bash
   make requirements
   ```
-- When using WSL, you may need to install the package in development mode:
+- You may need to install the package if trying to run the module as scripts:
   ```bash
-  pip install -e .
+  pip install -e .  -> python3 affordable_housing/dataset.py
+  pip install .
+  ```  
+
+  Or you can try run the scripts in module mode
+  ```base
+  python3 -m affordable_housing.dataset
   ```
+
 - Key dependencies:
   - pandas, numpy: Data processing
   - scikit-learn: Modeling
@@ -76,6 +83,8 @@ Run Jupyter Notebook to explore the data:
   - ruff: Code formatting and linting
   - typer: CLI interface
   - loguru: Logging
+  - FastAPI: python web framework 
+  - Uvicorn: web server
 
 ### Development Workflow
 - After installing new packages:
