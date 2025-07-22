@@ -6,6 +6,8 @@
 
 Analysing housing projects in California applying for tax-exempt bond financing.  
 
+Predictions are hosted on http://aa-affordable-housing-predict-gateway-lambda.s3-website-us-west-1.amazonaws.com/
+
 ![data pipeline](images/data_pipeline.png)
 
 ## Usage
@@ -29,7 +31,7 @@ Run Jupyter Notebook to explore the data:
   make data
   ```
 
-- `affordable_housing/features.py`: Generates machine learning features from `data/processed/merged_dataset.csv`.  
+- `affordable_housing/features.py`: Generates ML features from `data/processed/merged_dataset.csv`.  
   - Extracts key numeric and categorical columns, renames them, splits into train/test, applies preprocessing (including one-hot encoding, scaling, and custom transformations), saves processed features to `data/processed/`, and saves the preprocessor model to `models/preprocessor.pkl`.
 
   Run with:
@@ -37,44 +39,49 @@ Run Jupyter Notebook to explore the data:
   python affordable_housing/features.py
   ```
 
+## Training
+- `affordable_housing/modeling/train.py`: Trains ML model based on transformed features
+
+## Prediction
+- `affordable_housing/modeling/predict.py`: Predict probability of award based on transformed features
+
 ## Virtual Environment & Package Management
 
-### Setup
-- This project uses Python *virtualenvwrapper* for environment management
+- This project uses Python *virtualenvwrapper* for environment management.  
+  See docs: https://virtualenvwrapper.readthedocs.io/en/latest/command_ref.html#rmvirtualenv
     > Note: Environments created with virtualenvwrapper (via mkvirtualenv) are stored in ~/.virtualenvs/ and can be activated with workon
 - Python version: 3.10
-- Create new environment:
-  ```bash
-  make create_environment
-  ```
-- Show available environments:
-  ```bash
-  workon
-  ```
-- Activate environment:
-  ```bash
-  workon affordable_housing
-  ```
-- Deactivate environment:
-  ```bash
-  deactivate
-  ```
+### Setup
+- Create new environment: `make create_environment` OR `mkvirtualenv (name)`
+- Show available environments: `workon` OR `lsvirtualenv`
+- Activate environment: `workon affordable_housing`
+- Deactivate environment: `deactivate`
 
 ### Package Management
 - Install all dependencies:
   ```bash
   make requirements
   ```
-- You may need to install the package if trying to run the module as scripts:
+- For WSL, there might be some path issues with running the affordable_housing module, some methods to solve this: 
+  - Dynamic method: 
   ```bash
-  pip install -e .  -> python3 affordable_housing/dataset.py
+  pip install -e . 
+  python3 affordable_housing/dataset.py
+  ```
+  in requirements.txt - "-e git+https://github.com/hongjinhao/affordable_housing.git@4a62c854e1a6c55b82bd27edef67cb22cb606615#egg=affordable_housing"
+  - Static method: 
+  ```bash
   pip install .
+  python3 affordable_housing/dataset.py
   ```  
-
-  Or you can try run the scripts in module mode
+  in requirements.txt - "affordable_housing @ file:///home/dsfee222/affordable_housing"
+  - "Run-in-Module-Mode" method:
   ```base
   python3 -m affordable_housing.dataset
   ```
+
+- To view packages installed in the current virtual environment:
+  `lssitepackages`
 
 - Key dependencies:
   - pandas, numpy: Data processing
@@ -204,5 +211,21 @@ https://www.treasurer.ca.gov/ctcac/2025/application.asp
 
 - So what does the AWARD column stand for in award_list? 
 I am going to assume it means that the housing projects has won the tax-exempt bond allocation (via CDLAC's QRRP program) AND the non-competitive 4% tax credit (via CTCAC's LIHTC program)
+
+- 4% and 9%?  
+Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a higher amount of tax credits to support development and therefore are typically more competititve. 
+
+- round 2 4% excel has different column names and values from the round 1 4% excel  
+
+|  | round 1 | round 2 |
+|--|---------|---------|
+| column: Construction Type | Acq and Rehabilitation | Acquisition/Rehabilitation |
+| column: CDLAC Pool | 4 types | 3 types only, missing "rural" |
+| column: New Construction Set Aside | 3 types "none", "homeless, ELI/VLI" and "ELI/VLI" | 3 separate columns for homeless, ELI/VLI and MIP |
+| one column names differ | CDLAC TIE-BREAKER SELF SCORE | TIE-BREAKER SELF SCORE | 
+
+- How does the big beautiful bill affect the tax credits allocation? 
+ 
+
 --------
 
