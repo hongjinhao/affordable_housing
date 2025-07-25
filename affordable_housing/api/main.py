@@ -3,12 +3,12 @@ from typing import List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import joblib
 from loguru import logger
 import pandas as pd
 from pydantic import BaseModel
 
 from affordable_housing.config import MODELS_DIR
-from affordable_housing.modeling.predict import predict
 
 app = FastAPI(title="Affordable Housing Prediction API")
 
@@ -40,6 +40,35 @@ class PredictionInput(BaseModel):
 class PredictionOutput(BaseModel):
     prediction: int  # 1 for "Yes", 0 for "No"
     probability: float  # probability of award
+
+
+def predict(
+    user_input: pd.DataFrame,
+    model_path: Path = MODELS_DIR / "model.pkl",
+    preprocessor_path: Path = MODELS_DIR / "preprocessor.pkl",
+) -> pd.Series:
+    """Perform inference on input features using the specified model. Use for API endpoint.
+
+    Args:
+        model_path (Path): Path to the trained model (.pkl file).
+        features (pd.DataFrame): Input features for prediction.
+
+    Returns:
+        dictionary: Predicted labels and probability
+    """
+    logger.info("Loading model...")
+    model = joblib.load(model_path)
+    preprocessor = joblib.load(preprocessor_path)
+
+    logger.info("Preprocessing input...")
+    transformed_features = preprocessor.transform(user_input)
+    logger.info("Performing inference...")
+    prediction = model.predict(transformed_features)
+    prob = model.predict_proba(transformed_features)[:, 1][0]
+    logger.info(f"prediction: {prediction}")
+    logger.info(f"probability: {prob}")
+
+    return {"prediction": prediction, "probability": prob}
 
 
 @app.post("/predict", response_model=PredictionOutput)
