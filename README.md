@@ -172,9 +172,10 @@ Run Jupyter Notebook to explore the data:
     └── plots.py                <- Code to create visualizations
 ```
 ## References
-- `references/jh_grok_applicant_data_overview.pdf`: A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
+- [4% CTCAC data overview](references/jh_grok_applicant_data_overview.pdf): A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
 ![applicant data overview](images/applicant-data-overview.png)
+
 
 
 - What is this tax-exempt bond allocation via CDLAC?  
@@ -209,7 +210,7 @@ CDLAC’s tax-exempt bond allocations are organized into multiple rounds (e.g., 
 From the CTCAC website  
 https://www.treasurer.ca.gov/ctcac/2025/application.asp
 
-- So what does the AWARD column stand for in award_list? 
+- So what does the AWARD column stand for in award_list?   
 I am going to assume it means that the housing projects has won the tax-exempt bond allocation (via CDLAC's QRRP program) AND the non-competitive 4% tax credit (via CTCAC's LIHTC program)
 
 - 4% and 9%?  
@@ -217,15 +218,19 @@ Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a
 
 - round 2 4% excel has different column names and values from the round 1 4% excel  
 
-|  | round 1 | round 2 |
-|--|---------|---------|
-| column: Construction Type | Acq and Rehabilitation | Acquisition/Rehabilitation |
-| column: CDLAC Pool | 4 types | 3 types only, missing "rural" |
-| column: New Construction Set Aside | 3 types "none", "homeless, ELI/VLI" and "ELI/VLI" | 3 separate columns for homeless, ELI/VLI and MIP |
-| one column names differ | CDLAC TIE-BREAKER SELF SCORE | TIE-BREAKER SELF SCORE | 
+|  | round 1 | round 2 | solution |
+|--|---------|---------| -------- |
+| column: Construction Type | Acq and Rehabilitation | Acquisition/Rehabilitation | rename |
+| column: CDLAC Pool | 4 types | 3 types only, missing "rural" | ignore |
+| column: New Construction Set Aside | 3 types "none", "homeless, ELI/VLI" and "ELI/VLI" | 3 separate columns for homeless, ELI/VLI and MIP | custom logic | 
+| one column names differ | CDLAC TIE-BREAKER SELF SCORE | TIE-BREAKER SELF SCORE | rename |
 
-- How does the big beautiful bill affect the tax credits allocation? 
- 
+- round 2 4% seems to have different allocation categories from round 1 4%
+![round 1 summary](images/round1_results.png)
+![round 2 summary](images/round2_results.png)
 
---------
+- How does the big beautiful bill affect the tax credits allocation?   
+[Impact of Big Beautiful Bill](references/impact_of_big_beautiful_bill.pdf)
+Signed into law in early July, therefore would likely affect round 2 of 4% tax credit allocations. Make sense to adjust the model's threshold to account for this positive impact, by reducing threshold for award to 0.44 probability. This increases the number of projects predicted to be awarded by 10%, 59 awarded and 70 rejected total for round 2. (round 1 results was 37 award, 53 rejected)
+
 

@@ -64,6 +64,7 @@ def main(
     )
 
     # rename column names to single word and lowercase
+    logger.info("rename columns")
     rename_dict = {
         "AVERAGE TARGETED AFFORDABILITY": "avg_targeted_affordability",
         "CDLAC TOTAL POINTS SCORE": "CDLAC_total_points_score",
@@ -78,6 +79,8 @@ def main(
     }
     X_values = X_values.rename(columns=rename_dict)
     print(X_values.columns)
+    logger.info("rename columns successful!")
+
     # split
     logger.info("Split data into test and train")
     X_train, X_test, y_train, y_test = train_test_split(
@@ -96,7 +99,7 @@ def main(
     points_pipe = make_pipeline(points_transformer, MinMaxScaler())
 
     logger.debug("Setting up categorical and numerical pipelines")
-    cat_pipe = make_pipeline(OneHotEncoder())
+    cat_pipe = make_pipeline(OneHotEncoder(handle_unknown="ignore"))
     remainder_num_pipe = make_pipeline(StandardScaler())
 
     logger.info("Creating column transformer")
