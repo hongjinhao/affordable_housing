@@ -2,6 +2,7 @@ from pathlib import Path
 
 import joblib
 from loguru import logger
+import mlflow
 import pandas as pd
 from scipy.stats import uniform
 from sklearn.linear_model import LogisticRegression
@@ -48,17 +49,19 @@ def main(
         random_state=42,
         verbose=1,
     )
+    mlflow.set_experiment("AffordableHousing")
+    mlflow.sklearn.autolog()
+    with mlflow.start_run(run_name="2025R1Train"):
+        logger.info("Fitting model...")
+        random_search.fit(X_train, y_train)
+        logger.info(f"Best Validation F1 (CV): {random_search.best_score_:.3f}")
+        logger.info(f"Best Parameters: {random_search.best_params_}")
 
-    logger.info("Fitting model...")
-    random_search.fit(X_train, y_train)
-    logger.info(f"Best Validation F1 (CV): {random_search.best_score_:.3f}")
-    logger.info(f"Best Parameters: {random_search.best_params_}")
+        best_model_pipeline = random_search.best_estimator_
 
-    best_model_pipeline = random_search.best_estimator_
-
-    logger.info(f"Saving best model to {model_path}")
-    joblib.dump(best_model_pipeline, model_path)
-    logger.success("Model training and saving complete.")
+        logger.info(f"Saving best model to {model_path}")
+        joblib.dump(best_model_pipeline, model_path)
+        logger.success("Model training and saving complete.")
 
 
 if __name__ == "__main__":

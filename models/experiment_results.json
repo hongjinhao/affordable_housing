@@ -1,0 +1,13 @@
+{
+    "experiment_id": "exp_001",
+    "model": "LogisticRegression",
+    "parameters": {
+        "logisticregression__C": 815.4624284548341,
+        "logisticregression__class_weight": null,
+        "logisticregression__max_iter": 500,
+        "logisticregression__penalty": "l1",
+        "logisticregression__solver": "liblinear"
+    },
+    "test_f1_score": 0.78,
+    "timestamp": "2025-07-28T09:14:19.561834"
+}
