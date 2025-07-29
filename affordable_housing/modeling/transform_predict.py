@@ -74,10 +74,10 @@ def transform_new_construction_set_aside(df_round2):
 
 @app.command()
 def main(
-    input_path: Path = EXTERNAL_DATA_DIR / "01_May_20_Applicant_List.xlsx",
+    input_path: Path = EXTERNAL_DATA_DIR / "2025-R2-ApplicantList.xlsx",
     preprocessor_path: Path = MODELS_DIR / "preprocessor.pkl",
     model_path: Path = MODELS_DIR / "model.pkl",
-    output_path: Path = PROCESSED_DATA_DIR / "01May2025_4%R2_predictions_with_raw.csv",
+    output_path: Path = PROCESSED_DATA_DIR / "2025-R2-predictions-with-raw.csv",
     decision_threshold: float = 0.44,  # Lowered to reflect OBBBA's increased LIHTC
 ):
     """

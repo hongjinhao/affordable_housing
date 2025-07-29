@@ -119,6 +119,7 @@ def main(
         ],
         remainder=remainder_num_pipe,
     )
+
     # transform
     logger.info("Fitting and transforming training data")
     X_train_transform = preprocessor_pipe.fit_transform(X_train)

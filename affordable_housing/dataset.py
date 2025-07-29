@@ -17,8 +17,8 @@ def hello():
 @app.command()
 def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path1: Path = EXTERNAL_DATA_DIR / "award_list.xlsx",
-    input_path2: Path = EXTERNAL_DATA_DIR / "2025-Applicant-list-4-per-R1.xlsx",
+    input_path1: Path = EXTERNAL_DATA_DIR / "2025-R1-AwardList.xlsx",
+    input_path2: Path = EXTERNAL_DATA_DIR / "2025-R1-ApplicantList.xlsx",
     output_path: Path = PROCESSED_DATA_DIR / "merged_dataset.csv",
     merge_key: str = "APPLICATION NUMBER",  # Default merge key; adjust as needed
     merge_how: str = "right",  # Default merge type; options: left, right, inner, outer

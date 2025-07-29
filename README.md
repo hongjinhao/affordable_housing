@@ -206,7 +206,7 @@ https://www.huduser.gov/portal/datasets/lihtc.html
 - Why are there multiple rounds?  
 CDLAC’s tax-exempt bond allocations are organized into multiple rounds (e.g., Round 1, Round 2) within a calendar year, with a competitive, points-based system to distribute a limited annual bond volume cap (e.g., $5.126 billion for 2025).
 
-- Source of the award and applicantion list?  
+- Source of the award and applicant list?  
 From the CTCAC website  
 https://www.treasurer.ca.gov/ctcac/2025/application.asp
 
@@ -224,6 +224,8 @@ Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a
 | column: CDLAC Pool | 4 types | 3 types only, missing "rural" | ignore |
 | column: New Construction Set Aside | 3 types "none", "homeless, ELI/VLI" and "ELI/VLI" | 3 separate columns for homeless, ELI/VLI and MIP | custom logic | 
 | one column names differ | CDLAC TIE-BREAKER SELF SCORE | TIE-BREAKER SELF SCORE | rename |
+| column: state credit request | almost none | most projects have this | ? |
+
 
 - round 2 4% seems to have different allocation categories from round 1 4%
 ![round 1 summary](images/round1_results.png)
@@ -233,4 +235,21 @@ Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a
 [Impact of Big Beautiful Bill](references/impact_of_big_beautiful_bill.pdf)
 Signed into law in early July, therefore would likely affect round 2 of 4% tax credit allocations. Make sense to adjust the model's threshold to account for this positive impact, by reducing threshold for award to 0.44 probability. This increases the number of projects predicted to be awarded by 10%, 59 awarded and 70 rejected total for round 2. (round 1 results was 37 award, 53 rejected)
 
+- Review the data sources   
+There are two organisations CDLAC and CTCAC that post data.  
+The data from CDLAC reports seem to very closely match that from CTCAC reports, so it seems like almost all projects that win the QRRP also gets the 4% tax credits.  
+Thus, I will focus on the reports from CTCAC 4% tax credits since they are already in excel format so no conversion from pdf to excel is required. 
+  - [CDLAC 2025 reports](https://www.treasurer.ca.gov/cdlac/py.asp?year=2025)
+  - [CDLAC previous years reports](https://www.treasurer.ca.gov/cdlac/prior.asp)
+  - [CTCAC 2025 reports](https://www.treasurer.ca.gov/ctcac/2025/application.asp)
+  - [CTCAC previous years reports](https://www.treasurer.ca.gov/ctcac/2024/annualreport.asp)
 
+- Data file name format used: 
+  - YYYY-RX-ApplicantList.xlsx: applicant data for 4% credits (features)
+    - [CDLAC previous years reports](https://www.treasurer.ca.gov/cdlac/prior.asp)
+    - [CTCAC 2025 reports](https://www.treasurer.ca.gov/ctcac/2025/application.asp)
+  - YYYY-RX-AwardList.xlsx: projects that won 4% credits (labels)
+    - [CTCAC 2025 reports](https://www.treasurer.ca.gov/ctcac/2025/application.asp)
+  - YYYY-Financing-data.xlsx: projects that won 4% credits (labels)
+    - [CTCAC previous years reports](https://www.treasurer.ca.gov/ctcac/2024/annualreport.asp)
+  
