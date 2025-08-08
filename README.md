@@ -5,6 +5,7 @@
 </a>
 
 Analysing housing projects in California applying for tax-exempt bond financing.  
+Objective: to develop a data analysis tool for studying affordable housing projects in California, focusing on tax-exempt bond allocations for Round 1 of 2025. This tool will analyze awarded and rejected projects, visualize key metrics, and predict outcomes for the next funding round, helping us identify trends and guide future applications.
 
 Predictions are hosted on http://aa-affordable-housing-predict-gateway-lambda.s3-website-us-west-1.amazonaws.com/
 
