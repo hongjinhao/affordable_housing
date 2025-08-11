@@ -40,4 +40,4 @@ jobs:
     - name: Run ruff
       run: ruff format --check affordable_housing
     - name: Lint with Ruff
-      run: ruff  affordable_housing
+      run: ruff check affordable_housing
