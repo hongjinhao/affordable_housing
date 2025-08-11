@@ -2,7 +2,6 @@ from pathlib import Path
 
 from loguru import logger
 import pandas as pd
-from tqdm import tqdm
 import typer
 
 from affordable_housing.config import EXTERNAL_DATA_DIR, PROCESSED_DATA_DIR

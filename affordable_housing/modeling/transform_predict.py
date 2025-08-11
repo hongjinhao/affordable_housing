@@ -4,7 +4,6 @@ import joblib
 from loguru import logger
 import pandas as pd
 from sklearn.metrics import classification_report, f1_score
-from tqdm import tqdm
 import typer
 
 from affordable_housing.config import EXTERNAL_DATA_DIR, MODELS_DIR, PROCESSED_DATA_DIR
@@ -147,9 +146,9 @@ def main(
         # Transform features
         logger.info("Transforming features...")
         X_transformed = preprocessor.transform(X_values)
-        X_transformed_df = pd.DataFrame(
-            X_transformed, columns=preprocessor.get_feature_names_out()
-        )
+        # X_transformed_df = pd.DataFrame(
+        #     X_transformed, columns=preprocessor.get_feature_names_out()
+        # )
         logger.info("Feature transformation complete")
 
         # Generate predictions

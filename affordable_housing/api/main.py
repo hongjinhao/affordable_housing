@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import Dict, Union
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -46,7 +46,7 @@ def predict(
     user_input: pd.DataFrame,
     model_path: Path = MODELS_DIR / "model.pkl",
     preprocessor_path: Path = MODELS_DIR / "preprocessor.pkl",
-) -> pd.Series:
+) -> Dict[str, Union[int, float]]:
     """Perform inference on input features using the specified model. Use for API endpoint.
 
     Args:

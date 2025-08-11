@@ -4,7 +4,6 @@ import joblib
 from loguru import logger
 import pandas as pd
 from sklearn.metrics import classification_report, f1_score
-from tqdm import tqdm
 import typer
 
 from affordable_housing.config import MODELS_DIR, PROCESSED_DATA_DIR
