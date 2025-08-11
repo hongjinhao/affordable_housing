@@ -8,7 +8,6 @@ from scipy.stats import uniform
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from sklearn.pipeline import make_pipeline
-from tqdm import tqdm
 import typer
 
 from affordable_housing.config import MODELS_DIR, PROCESSED_DATA_DIR
