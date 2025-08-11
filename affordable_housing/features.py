@@ -7,13 +7,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import (
-    FunctionTransformer,
     MinMaxScaler,
     OneHotEncoder,
     PowerTransformer,
     StandardScaler,
 )
-from tqdm import tqdm
 import typer
 
 from affordable_housing.config import MODELS_DIR, PROCESSED_DATA_DIR
