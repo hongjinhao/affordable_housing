@@ -6,32 +6,41 @@ name: Affordable Housing CI
 on:
   push:
     branches: [ main ]
+    # This tells the workflow to start automatically when someone pushes code to the "main" branch.
   pull_request:
     branches: [ main ]
+    # This tells the workflow to start automatically when someone pushes code to the "main" branch.
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ "3.10", "3.11", "3.12" ]
+      # This sets up a strategy to run the job multiple times, once for each Python version (3.10, 3.11, and 3.12), to test the code with different Python setups.
     steps:
     - uses: actions/checkout@v4
+    # This step checks out (downloads) your code from the GitHub repository to the computer running the workflow so it can be tested.
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+    # This step installs the specific Python version (from the matrix) on the computer so the code can run with that version.
     - name: Cache pip
       uses: actions/cache@v4
       with:
        path: ~/.cache/pip # This path is specific to Ubuntu
+      # This specifies where to store cached files for Python packages on Ubuntu.
+      # This creates a unique key based on the operating system and the contents of the "requirements.txt" file to check if cached packages can be reused.
        # Look to see if there is a cache hit for the corresponding requirements file
        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
        restore-keys: |
          ${{ runner.os }}-pip-
          ${{ runner.os }}-
+      # These are fallback keys to restore cached files if the exact key doesn't match, helping speed up the process by reusing old caches.
     # You can test your matrix by printing the current Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
+    # This step runs a small Python command to print the version of Python being used, helping you verify the setup.
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -39,5 +48,7 @@ jobs:
         pip install ruff
     - name: Run ruff
       run: ruff format --check affordable_housing
+    # This step uses "ruff" to check if the code in the "affordable_housing" folder follows a consistent formatting style, but it won't change the code.
     - name: Lint with Ruff
       run: ruff check affordable_housing
+    # This step uses "ruff" again to lint (analyze) the code in the "affordable_housing" folder, looking for potential errors or style issues.
