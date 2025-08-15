@@ -8,6 +8,10 @@
         "logisticregression__penalty": "l1",
         "logisticregression__solver": "liblinear"
     },
+    "train_data": "2025-R1-ApplicantList",
     "test_f1_score": 0.78,
-    "timestamp": "2025-07-28T09:14:19.561834"
+    "test2_data": "2025-R2-ApplicantList",
+    "test2_accurary": 0.6,
+    "date": "2025-08-15",
+    "git_commit": "0b88f7cb4424037c60b5771b0e01d177e029c632"
 }
