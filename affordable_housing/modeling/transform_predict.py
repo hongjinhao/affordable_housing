@@ -11,7 +11,7 @@ from affordable_housing.config import EXTERNAL_DATA_DIR, MODELS_DIR, PROCESSED_D
 app = typer.Typer()
 
 
-def transform_new_construction_set_aside(df_round2):
+def transform_new_construction_set_aside(df_round2: pd.DataFrame) -> pd.DataFrame:
     """
     Transform Round 2 Homeless, ELI/VLI, and MIP columns into a single NEW CONSTRUCTION SET ASIDE column
     to match Round 1 format.
@@ -76,7 +76,7 @@ def main(
     input_path: Path = EXTERNAL_DATA_DIR / "2025-R2-ApplicantList.xlsx",
     preprocessor_path: Path = MODELS_DIR / "preprocessor.pkl",
     model_path: Path = MODELS_DIR / "model.pkl",
-    output_path: Path = PROCESSED_DATA_DIR / "2025-R2-predictions-with-raw.csv",
+    output_path: Path = PROCESSED_DATA_DIR / "predictions/2025-R2-predictions-with-raw.csv",
     decision_threshold: float = 0.44,  # Lowered to reflect OBBBA's increased LIHTC
 ):
     """
