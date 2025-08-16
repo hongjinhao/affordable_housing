@@ -172,7 +172,7 @@ Run Jupyter Notebook to explore the data:
     │
     └── plots.py                <- Code to create visualizations
 ```
-## References
+## References and Notes
 - [4% CTCAC data overview](references/jh_grok_applicant_data_overview.pdf): A PDF containing column descriptions and insights for the applicant dataset at `data/external/2025-Applicant-list-4-per-R1.xlsx`
 
 ![applicant data overview](images/applicant-data-overview.png)
