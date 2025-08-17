@@ -297,7 +297,7 @@ def main(
         # Save processed data
 
         train_df, test_df = train_test_split(
-            dataset, test_size=0.25, stratify=dataset["award"], random_state=42
+            dataset, test_size=0.20, stratify=dataset["award"], random_state=42
         )
         logger.info(
             f"Successfully split train and test. Train shape: {train_df.shape} and Test shape: {test_df.shape}"
