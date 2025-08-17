@@ -1,7 +1,10 @@
 from pathlib import Path
+import re
 
 from loguru import logger
+import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 import typer
 
 from affordable_housing.config import EXTERNAL_DATA_DIR, PROCESSED_DATA_DIR
@@ -9,83 +12,268 @@ from affordable_housing.config import EXTERNAL_DATA_DIR, PROCESSED_DATA_DIR
 app = typer.Typer()
 
 
-def hello():
-    print("Hello")
+def rename_column_names(applicant_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Rename columns in the DataFrame based on regular expression patterns.
+    Args:
+        applicant_df (pd.DataFrame): Input DataFrame to process.
+    Returns:
+        pd.DataFrame: DataFrame with renamed columns.
+    Raises:
+        AssertionError: If any regular expression matches more than one column.
+    """
+    num_of_matches = [0] * 20
+    df = applicant_df.copy()  # Create a copy to avoid modifying the original
+
+    for i, col in enumerate(df.columns):
+        if re.match("average", col, re.IGNORECASE):
+            df = df.rename(columns={col: "avg_targeted_affordability"})
+            num_of_matches[0] += 1
+        elif re.match("CDLAC TOTAL", col, re.IGNORECASE):
+            df = df.rename(columns={col: "total_points"})
+            num_of_matches[1] += 1
+        elif re.search("tie-brea", col, re.IGNORECASE):
+            df = df.rename(columns={col: "tie_breaker_self_score"})
+            num_of_matches[2] += 1
+        elif re.search("bond", col, re.IGNORECASE):
+            df = df.rename(columns={col: "bond_request_amount"})
+            num_of_matches[3] += 1
+        elif re.search("units for homeless", col, re.IGNORECASE):
+            df = df.rename(columns={col: "num_homeless_units"})
+            num_of_matches[4] += 1
+        elif re.search("construction type", col, re.IGNORECASE):
+            df = df.rename(columns={col: "construction_type"})
+            num_of_matches[5] += 1
+        elif re.search("housing type", col, re.IGNORECASE):
+            df = df.rename(columns={col: "housing_type"})
+            num_of_matches[6] += 1
+        elif re.search("CDLAC.*region", col, re.IGNORECASE):
+            df = df.rename(columns={col: "CDLAC_region"})
+            num_of_matches[7] += 1
+        elif re.search("CDLAC.*pool", col, re.IGNORECASE):
+            df = df.rename(columns={col: "CDLAC_pool"})
+            num_of_matches[8] += 1
+        elif re.search("BIPOC", col, re.IGNORECASE):
+            df = df.rename(columns={col: "bipoc_binary"})
+            num_of_matches[9] += 1
+        elif re.match("new construction set aside", col, re.IGNORECASE):
+            df = df.rename(columns={col: "new_construction_set_aside"})
+            num_of_matches[10] += 1
+        elif re.search("secondary new construction", col, re.IGNORECASE):
+            df = df.rename(columns={col: "secondary_new_construction_set_aside"})
+            num_of_matches[11] += 1
+        elif re.search("application", col, re.IGNORECASE):
+            df = df.rename(columns={col: "application_number"})
+            num_of_matches[12] += 1
+
+    # Ensure each regular expression matches at most one column
+    for i in range(20):
+        assert num_of_matches[i] < 2, (
+            f"Pattern {i} matched {num_of_matches[i]} columns, expected at most 1"
+        )
+
+    return df
+
+
+def clean_and_merge_columns(applicant_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Clean and merge specific columns in the DataFrame, including set-aside and CDLAC pool columns.
+    Args:
+        applicant_df (pd.DataFrame): Input DataFrame to process.
+    Returns:
+        pd.DataFrame: DataFrame with cleaned and merged columns.
+    """
+    df = applicant_df.copy()  # Create a copy to avoid modifying the original
+
+    # Handle new_construction_set_aside and secondary_new_construction_set_aside
+    if "secondary_new_construction_set_aside" in df.columns:
+        df["new_construction_set_aside"] = df["new_construction_set_aside"].fillna("")
+        df["secondary_new_construction_set_aside"] = df[
+            "secondary_new_construction_set_aside"
+        ].fillna("")
+        df["new_construction_set_aside"] = df["new_construction_set_aside"].str.upper()
+        df["secondary_new_construction_set_aside"] = df[
+            "secondary_new_construction_set_aside"
+        ].str.upper()
+        # Concatenate, avoiding extra commas for empty secondary values
+        df["combined_set_aside"] = df["new_construction_set_aside"] + df[
+            "secondary_new_construction_set_aside"
+        ].apply(lambda x: f", {x}" if x else "")
+        df["combined_set_aside"] = df["combined_set_aside"].str.strip(", ")
+        df["combined_set_aside"] = df["combined_set_aside"].replace("", None)
+    else:
+        df["combined_set_aside"] = df["new_construction_set_aside"].str.upper()
+
+    # Clean CDLAC_pool
+    df["CDLAC_pool"] = df["CDLAC_pool"].str.upper()
+    df["CDLAC_pool"] = df["CDLAC_pool"].str.strip(", ")
+
+    # Handle combined_CDLAC_pool based on bipoc_binary
+    if "bipoc_binary" in df.columns:
+        df["combined_CDLAC_pool"] = np.where(
+            df["bipoc_binary"] == "Yes", "BIPOC", df["CDLAC_pool"]
+        )
+    else:
+        df["combined_CDLAC_pool"] = df["CDLAC_pool"]
+
+    return df
+
+
+def standardize_application_number(num: str) -> str:
+    # Match CA-24-555 or 24-596 formats and transform them into CA-YYYY-digits
+    match = re.match(r"(\w+)-(\d+)-(\d+)|(\d+)-(\d+)", num)
+    if not match:
+        return f"Invalid format: {num}"
+
+    if match.group(1):  # CA-24-555 format
+        prefix, year, seq = match.group(1), match.group(2), match.group(3)
+        if prefix != "CA":
+            return f"Invalid prefix: {num}"
+    else:  # 24-596 format
+        prefix, year, seq = "CA", match.group(4), match.group(5)
+
+    # Convert year to four digits (assume 20XX for XX < 100)
+    try:
+        year_int = int(year)
+        if year_int < 100:
+            year = f"20{year_int:02d}"  # e.g., 24 -> 2024
+        else:
+            year = f"{year_int}"
+    except ValueError:
+        return f"Invalid year: {num}"
+
+    return f"{prefix}-{year}-{seq}"
 
 
 @app.command()
 def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path1: Path = EXTERNAL_DATA_DIR / "2025-R1-AwardList.xlsx",
-    input_path2: Path = EXTERNAL_DATA_DIR / "2025-R1-ApplicantList.xlsx",
-    output_path: Path = PROCESSED_DATA_DIR / "merged_dataset.csv",
-    merge_key: str = "APPLICATION NUMBER",  # Default merge key; adjust as needed
-    merge_how: str = "right",  # Default merge type; options: left, right, inner, outer
-    # ----------------------------------------------
+    # Input paths for applicant lists
+    input_path_r1_2023_applicant: Path = EXTERNAL_DATA_DIR / "2023-R1-ApplicantList.xlsx",
+    input_path_r2_2023_applicant: Path = EXTERNAL_DATA_DIR / "2023-R2-ApplicantList.xlsx",
+    input_path_r3_2023_applicant: Path = EXTERNAL_DATA_DIR / "2023-R3-ApplicantList.xlsx",
+    input_path_r1_2024_applicant: Path = EXTERNAL_DATA_DIR / "2024-R1-ApplicantList.xlsx",
+    input_path_r2_2024_applicant: Path = EXTERNAL_DATA_DIR / "2024-R2-ApplicantList.xlsx",
+    input_path_r1_2025_applicant: Path = EXTERNAL_DATA_DIR / "2025-R1-ApplicantList.xlsx",
+    # Input paths for award lists
+    input_path_labels_2023: Path = EXTERNAL_DATA_DIR / "2023-Financing-data.xlsx",
+    input_path_labels_2024: Path = EXTERNAL_DATA_DIR / "2024-Financing-data.xlsx",
+    input_path_labels_r1_2025: Path = EXTERNAL_DATA_DIR / "2025-R1-AwardList.xlsx",
+    # Output
+    output_path: Path = PROCESSED_DATA_DIR / "3yr_dataset.csv",
+    output_path_train: Path = PROCESSED_DATA_DIR / "3yr_dataset_train.csv",
+    output_path_test: Path = PROCESSED_DATA_DIR / "3yr_dataset_test.csv",
 ):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    """Process two Excel files by merging them and handling NaN values."""
+    """
+    Combine datasets from 3 years (2023, 2024, 2025 till R1) by standardising their names, merging and cleaning.
+    Split Dataset into train and test.
+    """
     logger.info("Starting dataset processing...")
 
     try:
-        # Read Excel files
-        logger.info(f"Loading first Excel file from {input_path1}")
-        df1 = pd.read_excel(input_path1)
-        logger.info(f"Loaded first dataset with {len(df1)} rows and {len(df1.columns)} columns")
-
-        logger.info(f"Loading second Excel file from {input_path2}")
-        # ignore first row of the applicant data table
-        df2 = pd.read_excel(input_path2, header=1, index_col=None)
-        logger.info(f"Loaded second dataset with {len(df2)} rows and {len(df2.columns)} columns")
-
-        logger.info(f"Extracting important columns from {input_path1}")
-        important_columns = [
-            "APPLICATION NUMBER",
-            "NC POOL SELECTION: HOMELESS, ELI/VLI, MIP",
-            "AWARD",
+        applicant_data = [
+            (input_path_r1_2023_applicant, "R1_2023_applicant"),
+            (input_path_r2_2023_applicant, "R2_2023_applicant"),
+            (input_path_r3_2023_applicant, "R3_2023_applicant"),
+            (input_path_r1_2024_applicant, "R1_2024_applicant"),
+            (input_path_r2_2024_applicant, "R2_2024_applicant"),
+            (input_path_r1_2025_applicant, "R1_2025_applicant"),
         ]
-        df1_important = df1[important_columns]
-        logger.info(f"Important columns are {important_columns}")
 
-        # Merge DataFrames
-        logger.info(f"Merging datasets on key '{merge_key}' with {merge_how} join")
-        merged_df = pd.merge(df1_important, df2, on=merge_key, how=merge_how)
+        # List of award DataFrames with their paths and names
+        award_data = [
+            (input_path_labels_2023, "Labels_2023", 1),  # sheet_name=1 for 2023
+            (input_path_labels_2024, "Labels_2024", 1),  # sheet_name=1 for 2024
+            (input_path_labels_r1_2025, "Labels_R1_2025", 0),  # default sheet for 2025
+        ]
+
+        # Load applicant DataFrames
+        applicant_dfs = []
+        for path, name in applicant_data:
+            logger.info(f"Loading applicant Excel file from {path}")
+            df = pd.read_excel(path, header=1, index_col=None)
+            df.attrs["file_name"] = str(path)  # Store file path in attrs
+            logger.info(f"Loaded {name} with {len(df)} rows and {len(df.columns)} columns")
+            applicant_dfs.append(df)
+
+        # Load award DataFrames
+        award_dfs = []
+        for path, name, sheet in award_data:
+            logger.info(f"Loading award Excel file from {path}")
+            df = pd.read_excel(path, sheet_name=sheet)
+            df.attrs["file_name"] = str(path)  # Store file path in attrs
+            logger.info(f"Loaded {name} with {len(df)} rows and {len(df.columns)} columns")
+            award_dfs.append(df)
+
+        logger.info("Standardise excels, drop some empty rows, merging some columns and cleaning")
+        applicant_df = pd.DataFrame()
+        for df in applicant_dfs:
+            df = rename_column_names(df)
+
+            threshold = int(len(df.columns) * 0.1)
+            df = df.dropna(thresh=threshold)
+            df = clean_and_merge_columns(df)
+            columns = [
+                "application_number",
+                "avg_targeted_affordability",
+                "total_points",
+                "tie_breaker_self_score",
+                "bond_request_amount",
+                "num_homeless_units",
+                "construction_type",
+                "housing_type",
+                "CDLAC_region",
+                "combined_CDLAC_pool",
+                "combined_set_aside",
+            ]
+            applicant_df = pd.concat([applicant_df, df[columns]])
         logger.info(
-            f"Merged dataset has {len(merged_df)} rows and {len(merged_df.columns)} columns"
+            f"Successfully processed applicant dataframes into one of size {applicant_df.shape}"
         )
 
-        # Adjust NaN values
-        logger.info("Handling NaN values by filling with appropriate values")
-        merged_df["AWARD"] = merged_df["AWARD"].fillna("No")
-        merged_df["BIPOC PRE-QUALIFIED"] = merged_df["BIPOC PRE-QUALIFIED"].fillna("No")
-        merged_df["NEW CONSTRUCTION SET ASIDE"] = merged_df["NEW CONSTRUCTION SET ASIDE"].fillna(
-            "none"
+        applicant_df["application_number"] = applicant_df["application_number"].apply(
+            standardize_application_number
         )
-        merged_df["NC POOL SELECTION: HOMELESS, ELI/VLI, MIP"] = merged_df[
-            "NC POOL SELECTION: HOMELESS, ELI/VLI, MIP"
-        ].fillna("none")
-        merged_df["GP1 PARENT ORGANIZATION"] = merged_df["GP1 PARENT ORGANIZATION"].fillna("none")
-        merged_df["GP2 COMPANY"] = merged_df["GP2 COMPANY"].fillna("none")
-        merged_df["GP2 CONTACT"] = merged_df["GP2 CONTACT"].fillna("none")
-        merged_df["GP2 PARENT COMPANY"] = merged_df["GP2 PARENT COMPANY"].fillna("none")
-        merged_df["GP3 COMPANY"] = merged_df["GP3 COMPANY"].fillna("none")
-        merged_df["GP3 CONTACT"] = merged_df["GP3 CONTACT"].fillna("none")
-        merged_df["GP3 PARENT COMPANY"] = merged_df["GP3 PARENT COMPANY"].fillna("none")
-        logger.info(f"After NaN handling, dataset has {len(merged_df)} rows")
+        # Verify that all standardized numbers are 11 characters
+        invalid_lengths = applicant_df["application_number"][
+            applicant_df["application_number"].str.len() != 11
+        ]
+        if not invalid_lengths.empty:
+            logger.warning(
+                f"Warning: Some standardized numbers do not have 11 characters: {invalid_lengths}"
+            )
 
-        # Adjust column data types
-        logger.info("Adjusting column data types")
-        col = "EXCEEDING MINIMUM INCOME RESTRICTIONS (20 PTS)"
-        if (merged_df[col] % 1 != 0).any():
-            print(f"Warning: {col} has non-integer values; rounding down")
-            merged_df[col] = merged_df[col].round(0)
-        merged_df[col] = merged_df[col].astype("int64")
-        logger.info(f"Adjusted column '{col}' to integer type")
+        labels_df = pd.DataFrame()
+        for df in award_dfs:
+            for col in df.columns:
+                if re.search(r"application|CTCAC", col, re.IGNORECASE):
+                    df = df.rename(columns={col: "application_number"})
+                    df["application_number"] = df["application_number"].apply(
+                        standardize_application_number
+                    )
+            labels_df = pd.concat([labels_df, df["application_number"]])
+        labels_df["award"] = "Yes"
+        logger.info(f"Successfully create labels dataframe with size {labels_df.shape}")
+
+        # Combine features and labels
+        dataset = pd.merge(applicant_df, labels_df, how="left", on="application_number")
+        dataset["award"] = dataset["award"].fillna("No")
+        logger.info(f"Successfully create dataset with size {dataset.shape}")
 
         # Save processed data
-        logger.info(f"Saving merged dataset to {output_path}")
-        merged_df.to_csv(output_path, index=False)
-        logger.success(f"Processing complete. Saved to {output_path}")
+
+        train_df, test_df = train_test_split(
+            dataset, test_size=0.25, stratify=dataset["award"], random_state=42
+        )
+        logger.info(
+            f"Successfully split train and test. Train shape: {train_df.shape} and Test shape: {test_df.shape}"
+        )
+
+        dataset.to_csv(output_path, index=False)
+        train_df.to_csv(output_path_train, index=False)
+        test_df.to_csv(output_path_test, index=False)
+        logger.success(
+            f"Processing complete. Saved to {output_path}, {output_path_train} and {output_path_test}"
+        )
 
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}")
