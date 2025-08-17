@@ -16,7 +16,7 @@ def main(
     # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
     features_path: Path = PROCESSED_DATA_DIR / "X_test_transform.csv",
     model_path: Path = MODELS_DIR / "model.pkl",
-    predictions_path: Path = PROCESSED_DATA_DIR / "test_predictions.csv",
+    predictions_path: Path = PROCESSED_DATA_DIR / "predictions/test_predictions.csv",
     y_test_path: Path = PROCESSED_DATA_DIR / "y_test.csv",
     # -----------------------------------------
 ):
