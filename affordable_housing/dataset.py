@@ -145,6 +145,36 @@ def standardize_application_number(num: str) -> str:
     return f"{prefix}-{year}-{seq}"
 
 
+def clean_region(region: str) -> str:
+    region = region.strip().lower()  # Normalize to lowercase for consistent matching
+
+    if re.search(r"bay\s*area", region):
+        return "BAY AREA"
+    elif re.search(r"northern", region):
+        return "NORTHERN"
+    elif re.search(r"inland", region):
+        return "INLAND"
+    elif re.search(r"city\s*of\s*(la|los\s*angeles)", region):
+        return "CITY OF LA"
+    elif re.search(r"balance\s*of\s*(la|los\s*angeles)\s*county", region):
+        return "BALANCE OF LA COUNTY"
+    elif re.search(r"coastal", region):
+        return "COASTAL"
+    else:
+        return "NONE"
+
+
+def clean_construction_type(construction_type: str) -> str:
+    construction_type = (
+        construction_type.strip().lower()
+    )  # Normalize to lowercase for consistent matching
+
+    if re.search(r"acq", construction_type, re.IGNORECASE):
+        return "ACQ AND REHAB"
+    else:
+        return construction_type.upper()
+
+
 @app.command()
 def main(
     # Input paths for applicant lists
@@ -257,6 +287,11 @@ def main(
         # Combine features and labels
         dataset = pd.merge(applicant_df, labels_df, how="left", on="application_number")
         dataset["award"] = dataset["award"].fillna("No")
+
+        dataset["combined_set_aside"] = dataset["combined_set_aside"].fillna("NONE")
+        dataset["CDLAC_region"] = dataset["CDLAC_region"].fillna("NONE")
+        dataset["CDLAC_region"] = dataset["CDLAC_region"].apply(clean_region)
+        dataset["construction_type"] = dataset["construction_type"].apply(clean_construction_type)
         logger.info(f"Successfully create dataset with size {dataset.shape}")
 
         # Save processed data
