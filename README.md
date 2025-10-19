@@ -228,7 +228,7 @@ Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a
 | column: state credit request | almost none | most projects have this | ? |
 
 
-- round 2 4% seems to have different allocation categories from round 1 4%
+- round 2 4% seems to have different allocation categories from round 1 4%  
 ![round 1 summary](images/round1_results.png)
 ![round 2 summary](images/round2_results.png)
 

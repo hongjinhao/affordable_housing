@@ -260,6 +260,7 @@ def main(
             f"Successfully processed applicant dataframes into one of size {applicant_df.shape}"
         )
 
+        # TODO: check output of standardize_application_number function for INVALID cases
         applicant_df["application_number"] = applicant_df["application_number"].apply(
             standardize_application_number
         )
@@ -284,6 +285,10 @@ def main(
         labels_df["award"] = "Yes"
         logger.info(f"Successfully create labels dataframe with size {labels_df.shape}")
 
+        # Ensure no duplicates in application_number before merging to avoid Cartesian product
+        applicant_df = applicant_df.drop_duplicates(subset=["application_number"])
+        labels_df = labels_df.drop_duplicates(subset=["application_number"])
+
         # Combine features and labels
         dataset = pd.merge(applicant_df, labels_df, how="left", on="application_number")
         dataset["award"] = dataset["award"].fillna("No")
@@ -296,13 +301,14 @@ def main(
 
         # Save processed data
 
+        logger.info("Splitting dataset into train and test sets...")
         train_df, test_df = train_test_split(
             dataset, test_size=0.20, stratify=dataset["award"], random_state=42
         )
         logger.info(
             f"Successfully split train and test. Train shape: {train_df.shape} and Test shape: {test_df.shape}"
         )
-
+        
         dataset.to_csv(output_path, index=False)
         train_df.to_csv(output_path_train, index=False)
         test_df.to_csv(output_path_test, index=False)
@@ -313,7 +319,6 @@ def main(
     except Exception as e:
         logger.error(f"Error during processing: {str(e)}")
         raise
-    # -----------------------------------------
 
 
 if __name__ == "__main__":
