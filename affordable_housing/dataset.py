@@ -13,6 +13,7 @@ app = typer.Typer()
 
 logger, log_file = setup_preprocessing_logger()
 
+
 def rename_column_names(applicant_df: pd.DataFrame) -> pd.DataFrame:
     """
     Rename columns in the DataFrame based on regular expression patterns.
@@ -309,7 +310,7 @@ def main(
         logger.info(
             f"Successfully split train and test. Train shape: {train_df.shape} and Test shape: {test_df.shape}"
         )
-        
+
         dataset.to_csv(output_path, index=False)
         train_df.to_csv(output_path_train, index=False)
         test_df.to_csv(output_path_test, index=False)

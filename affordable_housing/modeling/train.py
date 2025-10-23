@@ -28,41 +28,38 @@ app = typer.Typer()
 
 logger, log_file = setup_training_logger()
 
+
 def evaluate_model_performance(X, y, model, dataset="train", include_cv=True):
     """
     Evaluate model performance with predictions, F1 score, and classification report.
-    
+
     Args:
         X: Feature matrix
         y: True labels
         model: Fitted model to evaluate
         dataset: Name of dataset being evaluated (e.g., "train", "test", "validation")
         include_cv: Whether to include cross-validation (default: True, set False for test set)
-    
+
     Returns:
         dict: Dictionary containing f1_score, predictions, and optionally cv_scores
     """
     logger.info(f"Evaluating model performance on {dataset} set...")
-    
+
     # Make predictions
     y_pred = model.predict(X)
     logger.debug(f"Model predictions (first 20): {y_pred[:20]}")
     logger.debug(f"Actual y values (first 20): {y[:20]}")
-    
+
     # Calculate F1 score
     f1 = f1_score(y, y_pred)
     logger.info(f"{dataset.capitalize()} F1 score: {f1:.3f}")
-    
+
     # Classification report
     report = classification_report(y, y_pred)
     logger.info(f"{dataset.capitalize()} Classification Report:\n{report}")
-    
-    results = {
-        "f1_score": f1,
-        "predictions": y_pred,
-        "classification_report": report
-    }
-    
+
+    results = {"f1_score": f1, "predictions": y_pred, "classification_report": report}
+
     # Cross-validation only if requested (typically for training set)
     if include_cv:
         logger.info("Performing cross-validation...")
@@ -72,7 +69,7 @@ def evaluate_model_performance(X, y, model, dataset="train", include_cv=True):
         logger.debug(f"Individual CV fold scores: {cv_scores}")
         results["cv_mean"] = cv_scores.mean()
         results["cv_std"] = cv_scores.std()
-    
+
     return results
 
 
@@ -84,7 +81,7 @@ def run_random_search_cv(model, param_dist, X, y, n_iter=20, scoring="f1", cv=5,
     logger.info("Starting RandomizedSearchCV...")
     logger.info(f"Parameter search space: {param_dist}")
     logger.info(f"Search iterations: {n_iter}, CV folds: {cv}, Scoring: {scoring}")
-    
+
     search = RandomizedSearchCV(
         model,
         param_distributions=param_dist,
@@ -92,15 +89,15 @@ def run_random_search_cv(model, param_dist, X, y, n_iter=20, scoring="f1", cv=5,
         scoring=scoring,
         cv=cv,
         random_state=random_state,
-        verbose=1
+        verbose=1,
     )
-    
+
     logger.info("Fitting RandomizedSearchCV...")
     search.fit(X, y)
-    
+
     logger.info(f"Best Validation {scoring.upper()} (CV): {search.best_score_:.3f}")
     logger.info(f"Best parameters: {search.best_params_}")
-    
+
     best_model = search.best_estimator_
     evaluate_model_performance(X, y, best_model, "Train")
     return best_model, search.best_params_, search
@@ -155,8 +152,8 @@ def main(
         full_pipeline, param_dist, X_train, y_train, n_iter=10, cv=3
     )
 
-    X_test = pd.read_csv(test_dataset_path).drop(columns=['award', 'application_number'])
-    y_test = pd.read_csv(test_dataset_path)['award'].map({"Yes": 1, "No":0}).values.ravel()
+    X_test = pd.read_csv(test_dataset_path).drop(columns=["award", "application_number"])
+    y_test = pd.read_csv(test_dataset_path)["award"].map({"Yes": 1, "No": 0}).values.ravel()
     evaluate_model_performance(X_test, y_test, best_model, "test", include_cv=False)
 
     logger.info(f"Saving best model to {model_path}")

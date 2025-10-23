@@ -22,7 +22,8 @@ from affordable_housing.logger_config import setup_debug_logger
 
 app = typer.Typer()
 
-logger, log_file = setup_debug_logger() 
+logger, log_file = setup_debug_logger()
+
 
 def transform_new_construction_set_aside(df_round2: pd.DataFrame) -> pd.DataFrame:
     """
@@ -107,21 +108,32 @@ def prepare_round2_for_model(raw_df: pd.DataFrame) -> pd.DataFrame:
 
     # Standardize application number if present
     if "application_number" in df.columns:
-        df["application_number"] = df["application_number"].astype(str).apply(standardize_application_number)
+        df["application_number"] = (
+            df["application_number"].astype(str).apply(standardize_application_number)
+        )
 
     # Clean region and construction type
     if "CDLAC_region" in df.columns:
         df["CDLAC_region"] = df["CDLAC_region"].fillna("NONE").astype(str).apply(clean_region)
     if "construction_type" in df.columns:
-        df["construction_type"] = df["construction_type"].fillna("NONE").astype(str).apply(clean_construction_type)
+        df["construction_type"] = (
+            df["construction_type"].fillna("NONE").astype(str).apply(clean_construction_type)
+        )
 
     # Ensure combined_set_aside and combined_CDLAC_pool exist
-    df["combined_set_aside"] = df.get("combined_set_aside", pd.Series(index=df.index)).fillna("NONE")
-    df["combined_CDLAC_pool"] = df.get("combined_CDLAC_pool", pd.Series(index=df.index)).fillna("NONE")
+    df["combined_set_aside"] = df.get("combined_set_aside", pd.Series(index=df.index)).fillna(
+        "NONE"
+    )
+    df["combined_CDLAC_pool"] = df.get("combined_CDLAC_pool", pd.Series(index=df.index)).fillna(
+        "NONE"
+    )
 
     # Numeric columns: coerce and fill with 0
     num_cols = {
-        "avg_targeted_affordability": ["AVERAGE TARGETED AFFORDABILITY", "avg_targeted_affordability"],
+        "avg_targeted_affordability": [
+            "AVERAGE TARGETED AFFORDABILITY",
+            "avg_targeted_affordability",
+        ],
         "total_points": ["CDLAC TOTAL POINTS", "total_points"],
         "tie_breaker_self_score": ["TIEBREAKER SELF SCORE", "tie_breaker_self_score"],
         "bond_request_amount": ["BOND REQUEST", "bond_request_amount"],
@@ -155,7 +167,13 @@ def prepare_round2_for_model(raw_df: pd.DataFrame) -> pd.DataFrame:
     prepared = df.reindex(columns=final_cols)
 
     # Cast strings to str and strip where appropriate
-    for c in ["construction_type", "housing_type", "combined_CDLAC_pool", "combined_set_aside", "CDLAC_region"]:
+    for c in [
+        "construction_type",
+        "housing_type",
+        "combined_CDLAC_pool",
+        "combined_set_aside",
+        "CDLAC_region",
+    ]:
         if c in prepared.columns:
             prepared[c] = prepared[c].astype(str).str.strip()
 
@@ -186,13 +204,13 @@ def main(
         model = joblib.load(model_path)
 
         prepared_X = prepare_round2_for_model(raw_df)
-        prepared_X = prepared_X.drop(columns=['application_number'])
+        prepared_X = prepared_X.drop(columns=["application_number"])
         # Log shape and columns first
         logger.debug(f"Prepared data shape: {prepared_X.shape}")
         logger.debug(f"Columns: {list(prepared_X.columns)}")
 
         # Then show the actual data with full display
-        with pd.option_context('display.max_columns', None, 'display.width', None):
+        with pd.option_context("display.max_columns", None, "display.width", None):
             logger.debug(f"Sample data:\n{prepared_X.head()}")
 
         # Generate predictions
@@ -206,8 +224,15 @@ def main(
             manual_df = pd.read_csv(manual_award_path)
             manual_df["AWARD"] = manual_df["AWARD"].map({"Yes": 1, "No": 0})
             manual_df = rename_column_names(manual_df)
-            manual_df["application_number"] = manual_df["application_number"].astype(str).apply(standardize_application_number)
-            merged = prepared_X.merge(manual_df[['application_number', 'AWARD']], left_index=True, right_index=True, how='left')
+            manual_df["application_number"] = (
+                manual_df["application_number"].astype(str).apply(standardize_application_number)
+            )
+            merged = prepared_X.merge(
+                manual_df[["application_number", "AWARD"]],
+                left_index=True,
+                right_index=True,
+                how="left",
+            )
             y_true = merged["AWARD"]
             logger.info("Classification Report against manual awards:")
             logger.info("\n" + classification_report(y_true, y_pred, target_names=["No", "Yes"]))
