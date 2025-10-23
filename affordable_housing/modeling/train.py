@@ -141,11 +141,12 @@ def main(
     )
 
     full_pipeline = make_pipeline(preprocessor_pipe, RandomForestClassifier(random_state=42))
-
     param_dist = {
-        "randomforestclassifier__n_estimators": randint(50, 201),
-        "randomforestclassifier__max_depth": [None] + list(range(1, 21)),
-        "randomforestclassifier__min_samples_split": randint(2, 11),
+        "randomforestclassifier__n_estimators": randint(100, 301),  # More trees for stability
+        "randomforestclassifier__max_depth": [3, 5, 7, 10, 15, None],  # Focus on shallower trees
+        "randomforestclassifier__min_samples_split": randint(10, 51),  # Higher minimum to prevent overfitting
+        "randomforestclassifier__min_samples_leaf": randint(5, 21),  # Add this constraint
+        "randomforestclassifier__max_features": ["sqrt", "log2", 0.5, 0.7],  # Control feature sampling
     }
     logger.info("Starting hyperparameter tuning with RandomizedSearchCV...")
     best_model, _, _ = run_random_search_cv(

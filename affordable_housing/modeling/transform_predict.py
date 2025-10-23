@@ -183,7 +183,6 @@ def prepare_round2_for_model(raw_df: pd.DataFrame) -> pd.DataFrame:
 @app.command()
 def main(
     input_path: Path = EXTERNAL_DATA_DIR / "2025-R2-ApplicantList.xlsx",
-    preprocessor_path: Path = MODELS_DIR / "3yr-preprocessor.pkl",
     model_path: Path = MODELS_DIR / "3yr-model.pkl",
     output_path: Path = PROCESSED_DATA_DIR / "predictions/2025-R2-predictions-3yrmodel2.csv",
     manual_award_path: Path = INTERIM_DATA_DIR / "2025-R2-manual-award.csv",
@@ -200,7 +199,7 @@ def main(
         raw_df = pd.read_excel(input_path, header=1, index_col=None)
         logger.info(f"Loaded dataset with {len(raw_df)} rows and {len(raw_df.columns)} columns")
 
-        # Load preprocessor and model
+        # Load model (preprocessor + classifier)
         model = joblib.load(model_path)
 
         prepared_X = prepare_round2_for_model(raw_df)
@@ -215,7 +214,13 @@ def main(
 
         # Generate predictions
         logger.info("Performing inference...")
-        y_pred = model.predict(prepared_X)
+        y_pred_proba = model.predict_proba(prepared_X)[:, 1]  # Get probability of positive class
+        logger.info(f"First 20 prediction probabilities: {y_pred_proba[:20]}")
+        
+        # Apply custom threshold
+        threshold = 0.6
+        y_pred = (y_pred_proba >= threshold).astype(int)
+        logger.info(f"Applied threshold: {threshold}")
         logger.info(f"First 20 predictions: {y_pred[:20]}")
 
         # If manual awards provided, evaluate performance
