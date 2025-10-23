@@ -1,16 +1,17 @@
 from pathlib import Path
 import re
 
-from loguru import logger
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import typer
 
 from affordable_housing.config import EXTERNAL_DATA_DIR, PROCESSED_DATA_DIR
+from affordable_housing.logger_config import setup_preprocessing_logger
 
 app = typer.Typer()
 
+logger, log_file = setup_preprocessing_logger()
 
 def rename_column_names(applicant_df: pd.DataFrame) -> pd.DataFrame:
     """
