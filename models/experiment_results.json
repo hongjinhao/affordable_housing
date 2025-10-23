@@ -1,17 +1,48 @@
 {
-    "experiment_id": "exp_001",
-    "model": "LogisticRegression",
-    "parameters": {
-        "logisticregression__C": 815.4624284548341,
-        "logisticregression__class_weight": null,
-        "logisticregression__max_iter": 500,
-        "logisticregression__penalty": "l1",
-        "logisticregression__solver": "liblinear"
-    },
-    "train_data": "2025-R1-ApplicantList",
-    "test_f1_score": 0.78,
-    "test2_data": "2025-R2-ApplicantList",
-    "test2_accurary": 0.6,
-    "date": "2025-08-15",
-    "git_commit": "0b88f7cb4424037c60b5771b0e01d177e029c632"
+    "experiments": [
+        {
+            "experiment_id": "exp_001",
+            "model": "LogisticRegression",
+            "parameters": {
+                "logisticregression__C": 815.4624284548341,
+                "logisticregression__class_weight": null,
+                "logisticregression__max_iter": 500,
+                "logisticregression__penalty": "l1",
+                "logisticregression__solver": "liblinear"
+            },
+            "train_data": "2025-R1-ApplicantList",
+            "CV_f1_score": 0.55,
+            "test_f1_score": 0.78,
+            "future_test_data": "2025-R2-ApplicantList",
+            "future_test_accuracy": 0.6,
+            "date": "2025-08-15",
+            "git_commit": "0b88f7cb4424037c60b5771b0e01d177e029c632"
+        },
+        {
+            "experiment_id": "exp_002",
+            "model": "RandomForestClassifier",
+            "parameters": {
+                "randomforestclassifier__max_depth": 9,
+                "randomforestclassifier__min_samples_split": 4,
+                "randomforestclassifier__n_estimators": 157
+            },
+            "train_data": [
+                "data/external/2023-Financing-data.xlsx",
+                "data/external/2023-R1-ApplicantList.xlsx",
+                "data/external/2023-R2-ApplicantList.xlsx",
+                "data/external/2023-R3-ApplicantList.xlsx",
+                "data/external/2024-Financing-data.xlsx",
+                "data/external/2024-R1-ApplicantList.xlsx",
+                "data/external/2024-R2-ApplicantList.xlsx",
+                "data/external/2025-R1-ApplicantList.xlsx",
+                "data/external/2025-R1-AwardList.xlsx"
+            ],
+            "CV_f1_score": 0.63,
+            "test_f1_score": 0.64,
+            "future_test_data": "2025-R2-ApplicantList",
+            "future_test_accurary": 0.6,
+            "date": "2025-10-22",
+            "git_commit": "0e261bb7123f7b165e87368b85490b9a8e61610"
+        }
+    ]
 }

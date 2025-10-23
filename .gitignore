@@ -190,3 +190,10 @@ cython_debug/
 
 lambda_layer/python
 lambda_layer/venv
+
+#virtual environment
+venv-default/
+venv-jupyter/
+
+# logs
+logs/

@@ -228,7 +228,7 @@ Seems like CTCAC offers two types of tax credit programs, 4% and 9%. 9% offers a
 | column: state credit request | almost none | most projects have this | ? |
 
 
-- round 2 4% seems to have different allocation categories from round 1 4%
+- round 2 4% seems to have different allocation categories from round 1 4%  
 ![round 1 summary](images/round1_results.png)
 ![round 2 summary](images/round2_results.png)
 
@@ -254,3 +254,6 @@ Thus, I will focus on the reports from CTCAC 4% tax credits since they are alrea
   - YYYY-Financing-data.xlsx: projects that won 4% credits (labels)
     - [CTCAC previous years reports](https://www.treasurer.ca.gov/ctcac/2024/annualreport.asp)
   
+
+  - Experiment 2 using more data over 3 years still achieved the same accuracy (60%) which is worse than just guessing all not awarded. 
+    - future steps for improvement is to explore more hyperparameters, try to get 80% CV accuracy before testing. 
