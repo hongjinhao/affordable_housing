@@ -255,5 +255,5 @@ Thus, I will focus on the reports from CTCAC 4% tax credits since they are alrea
     - [CTCAC previous years reports](https://www.treasurer.ca.gov/ctcac/2024/annualreport.asp)
   
 
-  - Experiment 2 using more data over 3 years still achieved the same accuracy (60%) which is worse than just guessing all not awarded. 
-    - future steps for improvement is to explore more hyperparameters, try to get 80% CV accuracy before testing. 
+- Experiment 2 using more data over 3 years still achieved the same accuracy (60%) which is worse than just guessing all not awarded. 
+  - future steps for improvement is to explore more hyperparameters, try to get 80% CV accuracy before testing. 
